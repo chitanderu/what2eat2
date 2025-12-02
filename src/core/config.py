@@ -6,13 +6,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """应用配置（支持 PostgreSQL 和 SQLite，含连接池设置）"""
+    """应用配置（支持 PostgreSQL、MySQL 和 SQLite，含连接池设置）"""
 
     app_name: str = "What to Eat"
     debug: bool = False
 
     # 数据库类型
-    db_type: Literal["postgres", "sqlite"] = "sqlite"
+    db_type: Literal["postgres", "mysql", "sqlite"] = "sqlite"
 
     # PostgreSQL 配置
     db_host: str = "localhost"
@@ -50,6 +50,12 @@ class Settings(BaseSettings):
                 f"postgresql+asyncpg://{self.db_user}:{self.db_password}"
                 f"@{self.db_host}:{self.db_port}/{self.db_name}"
             )
+        elif self.db_type == "mysql":
+            return (
+                f"mysql+aiomysql://{self.db_user}:{self.db_password}"
+                f"@{self.db_host}:{self.db_port}/{self.db_name}"
+                "?charset=utf8mb4"
+            )
         elif self.db_type == "sqlite":
             return f"sqlite+aiosqlite:///{self.sqlite_db_path}"
         else:
@@ -60,6 +66,15 @@ class Settings(BaseSettings):
     def engine_options(self) -> dict:
         """统一封装 engine options，供 create_async_engine 使用"""
         if self.db_type == "postgres":
+            return {
+                "pool_size": self.pool_size,
+                "max_overflow": self.max_overflow,
+                "pool_timeout": self.pool_timeout,
+                "pool_recycle": self.pool_recycle,
+                "pool_use_lifo": self.pool_use_lifo,
+                "echo": self.echo,
+            }
+        if self.db_type == "mysql":
             return {
                 "pool_size": self.pool_size,
                 "max_overflow": self.max_overflow,
