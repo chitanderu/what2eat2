@@ -21,8 +21,8 @@ class Base(DeclarativeBase):
 
 
 class DateTimeMixin:
-    if settings.db_type == "postgres":
-        # PostgreSQL 原生支持 now() 和 onupdate
+    if settings.db_type in {"postgres", "mysql"}:
+        # PostgreSQL/MySQL 原生支持 now() 和 onupdate
         created_at: Mapped[datetime] = mapped_column(
             DateTime(timezone=True),
             server_default=func.now(),

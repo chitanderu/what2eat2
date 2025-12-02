@@ -21,10 +21,26 @@
 - **AI 模型调用**：Ollama（如 qwen3:8b）
     
 - **包与环境管理**：uv
-    
+
 - **容器化支持**：Docker · Docker Compose
-    
+
 - **架构设计**：Repository → Service → Router 分层结构
+
+## ⚙️ 数据库配置
+
+`DB_TYPE` 现支持 `postgres`、`mysql`、`sqlite` 三种类型。MySQL 采用异步驱动 `aiomysql`，连接字符串格式为
+
+```bash
+# .env 示例（MySQL）
+DB_TYPE=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=59591468
+DB_NAME=anime
+```
+
+如需自定义连接字符串，可参考 `mysql+aiomysql://user:password@host:port/dbname?charset=utf8mb4`。
 
 
 
